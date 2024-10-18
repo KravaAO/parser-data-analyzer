@@ -1,0 +1,95 @@
+<h2>Аналіз даних</h2>
+
+<p>Загальна кількість товарів: {{ total_products }}</p>
+<p>Середня ціна товарів: {{ average_price }} грн</p>
+<form method="post" action="{% url 'export_to_csv' %}">
+    {% csrf_token %}
+    <button type="submit">Конвертувати в CSV</button>
+</form>
+
+<form method="post" action="{% url 'export_to_json' %}">
+    {% csrf_token %}
+    <button type="submit">Експортувати в JSON</button>
+</form>
+
+<form method="post" action="{% url 'export_to_excel' %}">
+    {% csrf_token %}
+    <button type="submit">Експортувати в Excel</button>
+</form>
+<!-- Кнопки для сортування за рейтингом і ціною -->
+<form method="get">
+    <button type="submit" name="sort_by" value="rating_desc">Сортувати за рейтингом (від найвищого)</button>
+    <button type="submit" name="sort_by" value="rating_asc">Сортувати за рейтингом (від найнижчого)</button>
+    <button type="submit" name="sort_by" value="price_desc">Сортувати за ціною (від найдорожчого)</button>
+    <button type="submit" name="sort_by" value="price_asc">Сортувати за ціною (від найдешевшого)</button>
+</form>
+
+
+<!-- Результати пошуку найдешевших товарів -->
+{% if cheapest_products %}
+<h3>Найдешевші товари:</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Назва товару</th>
+            <th>Ціна (грн)</th>
+            <th>Зображення</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for _, row in cheapest_products.iterrows %}
+        <tr>
+            <td>{{ row.title }}</td>
+            <td>{{ row.price }}</td>
+            <td><img src="{{ row.image }}" alt="{{ row.title }}" width="150"></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<!-- Результати пошуку найдорожчих товарів -->
+{% if most_expensive_products %}
+<h3>Найдорожчі товари:</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Назва товару</th>
+            <th>Ціна (грн)</th>
+            <th>Зображення</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for _, row in most_expensive_products.iterrows %}
+        <tr>
+            <td>{{ row.title }}</td>
+            <td>{{ row.price }}</td>
+            <td><img src="{{ row.image }}" alt="{{ row.title }}" width="150"></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<!-- Таблиця з усіма товарами -->
+<h3>Таблиця товарів:</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Назва товару</th>
+            <th>Ціна (грн)</th>
+            <th>Рейтинг</th>
+            <th>Зображення</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in sorted_products %}
+        <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.rating }}</td>
+            <td><img src="{{ product.image }}" alt="{{ product.title }}" width="150"></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
