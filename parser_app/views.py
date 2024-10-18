@@ -13,7 +13,15 @@ import re
 import random
 from bs4 import BeautifulSoup
 import json
+from django import forms
 
+class URLForm(forms.Form):
+    url_field = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control styled-input',  # додаємо власний CSS клас
+            'placeholder': 'Введіть URL посилання'  # додати підказку для зручності
+        })
+    )
 
 # Create your views here.
 def parse_foxtrot(session, url):

@@ -1,45 +1,125 @@
-<h2>Товари</h2>
-
-<!-- Кнопки для дій -->
-<form method="post" action="{% url 'export_to_csv' %}">
-    {% csrf_token %}
-    <button type="submit">Конвертувати в CSV</button>
-</form>
-
-<form method="post" action="{% url 'export_to_json' %}">
-    {% csrf_token %}
-    <button type="submit">Експортувати в JSON</button>
-</form>
-
-<form method="post" action="{% url 'export_to_excel' %}">
-    {% csrf_token %}
-    <button type="submit">Експортувати в Excel</button>
-</form>
-
-<a href="{% url 'analyze_data' %}">
-    <button type="button">Перейти до аналізу</button>
-</a>
-
-
-<table border="1">
-    <thead>
-        <tr>
-            <th>Назва товару</th>
-            <th>Ціна (грн)</th>
-            <th>Оцінка</th>
-            <th>Зображення</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for title, price, image, rating in products %}
-        <tr>
-            <td>{{ title }}</td>
-            <td>{{ price }}</td>
-            <td>{{ rating }}</td>
-            <td><img src="{{ image }}" alt="{{ title }}" width="150"></td>
-        </tr>
-        {% endfor %}
-    </tbod
-
-
-
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товари</title>
+    <link rel="stylesheet" href="{% static 'parser_app/styles.css' %}">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #000;
+        }
+        .header {
+            padding: 150px 50px;
+            color: #000;
+            text-align: center;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 20px auto;
+            max-width: 1000px;
+            width: 90%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #00bcd4;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0097a7;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+        img {
+            border-radius: 10px;
+        }
+        a button {
+            background-color: #ff9800;
+            color: #fff;
+            margin-top: 10px;
+        }
+        a button:hover {
+            background-color: #e68900;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Товари</h2>
+    </div>
+    <div class="container">
+        <div class="button-container">
+            <form method="post" action="{% url 'export_to_csv' %}">
+                {% csrf_token %}
+                <button type="submit">Конвертувати в CSV</button>
+            </form>
+            <form method="post" action="{% url 'export_to_json' %}">
+                {% csrf_token %}
+                <button type="submit">Експортувати в JSON</button>
+            </form>
+            <form method="post" action="{% url 'export_to_excel' %}">
+                {% csrf_token %}
+                <button type="submit">Експортувати в Excel</button>
+            </form>
+            <a href="{% url 'analyze_data' %}">
+                <button type="button">Перейти до аналізу</button>
+            </a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Назва товару</th>
+                    <th>Ціна (грн)</th>
+                    <th>Оцінка</th>
+                    <th>Зображення</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for title, price, image, rating in products %}
+                <tr>
+                    <td>{{ title }}</td>
+                    <td>{{ price }}</td>
+                    <td>{{ rating }}</td>
+                    <td><img src="{{ image }}" alt="{{ title }}" width="150"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
