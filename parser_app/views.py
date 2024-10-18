@@ -12,9 +12,64 @@ from selenium.webdriver.common.by import By
 import re
 import random
 from bs4 import BeautifulSoup
+import json
 
 
 # Create your views here.
+def parse_foxtrot(session, url):
+    all_titles = []
+    all_prices = []
+    all_images = []
+    all_ratings = []
+
+    # Отримуємо першу сторінку, щоб визначити кількість сторінок
+    response = session.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Знаходимо всі значення data-page для пагінації
+    pagination = soup.find_all('li', {'data-page': True})
+    max_page = max([int(page['data-page']) for page in pagination])
+
+    # Парсимо кожну сторінку до max_page
+    for page in range(1, max_page + 1):
+        paginated_url = f"{url}?page={page}"
+        response = session.get(paginated_url)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        products = soup.find_all('script', type='application/ld+json')
+
+        for product in products:
+            try:
+                product_data = json.loads(product.get_text(strip=True))
+
+                # Перевіряємо чи це продукт, який нас цікавить
+                if '@type' in product_data and product_data['@type'] == 'ItemList':
+                    for item in product_data['itemListElement']:
+                        # Назва товару
+                        name = item['item']['name']
+                        all_titles.append(name)
+
+                        # Ціна товару
+                        price = item['item']['offers']['price']
+                        all_prices.append(price)
+
+                        # Посилання на зображення
+                        image_urls = item['item']['image']
+                        all_images.append(image_urls[0])  # Беремо перше зображення
+
+                        # Випадковий рейтинг
+                        rating = random.randint(0, 5)
+                        all_ratings.append(rating)
+
+            except (KeyError, json.JSONDecodeError):
+                continue
+
+    products = list(zip(all_titles, all_prices, all_images, all_ratings))
+    return products
+
 
 def parse_rozetka(session, url):
     all_titles = []
@@ -145,15 +200,15 @@ def parse_url_view(request):
 
                 if 'rozetka' in url:
                     products = parse_rozetka(session, url)
-                    request.session['products'] = products
-                    return render(request, 'parser_app/success.html', {'products': products})
-
                 elif 'hotline' in url:
                     products = parse_hotline(session, url)
-                    request.session['products'] = products
-                    return render(request, 'parser_app/success.html', {'products': products})
+                elif 'foxtrot' in url:
+                    products = parse_foxtrot(session, url)
                 else:
                     return render(request, 'parser_app/error.html', {'error': 'Unsupported URL'})
+
+                request.session['products'] = products
+                return render(request, 'parser_app/success.html', {'products': products})
 
             except requests.exceptions.RequestException as e:
                 return render(request, 'parser_app/error.html', {'error': str(e)})

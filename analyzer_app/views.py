@@ -3,7 +3,10 @@ import pandas as pd
 
 
 def clean_price(price):
-    return float(price.replace('\xa0', '').replace(' ', '').replace('₴', ''))
+    try:
+        return float(price.replace('\xa0', '').replace(' ', '').replace('₴', ''))
+    except:
+        return price
 
 
 def clean_rating(rating):
