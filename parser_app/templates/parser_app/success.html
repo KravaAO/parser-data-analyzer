@@ -1,0 +1,45 @@
+<h2>Товари</h2>
+
+<!-- Кнопки для дій -->
+<form method="post" action="{% url 'export_to_csv' %}">
+    {% csrf_token %}
+    <button type="submit">Конвертувати в CSV</button>
+</form>
+
+<form method="post" action="{% url 'export_to_json' %}">
+    {% csrf_token %}
+    <button type="submit">Експортувати в JSON</button>
+</form>
+
+<form method="post" action="{% url 'export_to_excel' %}">
+    {% csrf_token %}
+    <button type="submit">Експортувати в Excel</button>
+</form>
+
+<a href="{% url 'analyze_data' %}">
+    <button type="button">Перейти до аналізу</button>
+</a>
+
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Назва товару</th>
+            <th>Ціна (грн)</th>
+            <th>Оцінка</th>
+            <th>Зображення</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for title, price, image, rating in products %}
+        <tr>
+            <td>{{ title }}</td>
+            <td>{{ price }}</td>
+            <td>{{ rating }}</td>
+            <td><img src="{{ image }}" alt="{{ title }}" width="150"></td>
+        </tr>
+        {% endfor %}
+    </tbod
+
+
+
