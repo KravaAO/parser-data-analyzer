@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сучасна сторінка</title>
+    <link rel="stylesheet" href="{% static 'parser_app/styles.css' %}">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #000;
+        }
+        .header {
+            background: url('{% static "parser_app/bg.jpg" %}') no-repeat center center;
+            background-size: cover;
+            padding: 150px 50px;
+            color: #fff;
+            text-align: center;
+        }
+        .form-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+        h2 {
+            margin-bottom: 1rem;
+        }
+        button, input[type="text"] {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        button {
+            background-color: #00bcd4;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0097a7;
+        }
+        input[type="text"] {
+            width: 300px;
+        }
+        .developers {
+            background: #fff;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .card {
+            display: inline-block;
+            background: #f9f9f9;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 200px;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            border-radius: 50%;
+        }
+        .card h3 {
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+        .card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        footer {
+            background: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+        .loading-overlay .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #00bcd4;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+            form p {
+            margin: 0;
+            padding: 10px 0;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #fff;
+        }
+        form input[type="text"], form select, form textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ccc;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+        form button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #00bcd4;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #0097a7;
+        }
+            form input[type="text"] {
+        background: #fff;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 1rem;
+    }
+
+    /* Стилізація кнопки */
+    form button {
+        background-color: #00bcd4;
+        color: #fff;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    form button:hover {
+        background-color: #008c9e;
+    }
+    .form-container {
+        max-width: 800px; /* Збільшена ширина */
+        width: 100%;
+}
+</style>
+    <script>
+        function showLoadingOverlay() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h2>Введіть посилання:</h2>
+        <div class="form-container">
+            <form method="post" onsubmit="showLoadingOverlay()">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Парсити</button>
+            </form>
+        </div>
+    </div>
+    <div class="developers">
+        <h2>Наші розробники</h2>
+        <div class="card">
+            <img src="https://via.placeholder.com/150" alt="Developer">
+            <h3>Іван Іванов</h3>
+            <p>Frontend Developer</p>
+        </div>
+        <div class="card">
+            <img src="https://via.placeholder.com/150" alt="Developer">
+            <h3>Петро Петренко</h3>
+            <p>Backend Developer</p>
+        </div>
+        <div class="card">
+            <img src="https://via.placeholder.com/150" alt="Developer">
+            <h3>Ольга Олійник</h3>
+            <p>UI/UX Designer</p>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Сучасна сторінка. Всі права захищено.</p>
+    </footer>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+</body>
+</html>
