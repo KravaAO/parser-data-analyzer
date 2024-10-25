@@ -1,15 +1,13 @@
 # parser-data-analyzer
 
-встановка залежностей 
+### Встановлення залежностей
 
 ```commandline
-pip install django
-pip install pandas
+pip install django pandas
 ```
 
-для запуску сервера використовуйте наступну команду:
+### Для запуску сервера використовуйте наступну команду:
 
 ```commandline
 python manage.py runserver
 ```
-
