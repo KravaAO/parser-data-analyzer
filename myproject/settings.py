@@ -57,7 +57,7 @@ ROOT_URLCONF = 'myproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates/parser_app'],  # Додай тут шлях до спільної папки шаблонів, якщо потрібно
+        'DIRS': [BASE_DIR / 'templates/parser_app'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

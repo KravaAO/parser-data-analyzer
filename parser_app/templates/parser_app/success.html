@@ -1,125 +1,117 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Товари</title>
-    <link rel="stylesheet" href="{% static 'parser_app/styles.css' %}">
+    <title>Вибір елементів зі сторінки</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            color: #000;
-        }
-        .header {
-            padding: 150px 50px;
-            color: #000;
-            text-align: center;
-        }
-        .container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 20px;
-            margin: 20px auto;
-            max-width: 1000px;
-            width: 90%;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
+        .preview-container {
+            display: flex;  /* Додаємо flexbox для горизонтального розташування */
             flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 5px;
-            background-color: #00bcd4;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #0097a7;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
+            background-color: #f1f1f1;
+            padding: 10px;
             border: 1px solid #ccc;
+            margin-bottom: 20px;
+            min-height: 50px;
         }
-        th, td {
-            padding: 15px;
-            text-align: center;
-        }
-        th {
-            background-color: #f9f9f9;
-        }
-        img {
-            border-radius: 10px;
-        }
-        a button {
-            background-color: #ff9800;
-            color: #fff;
-            margin-top: 10px;
-        }
-        a button:hover {
-            background-color: #e68900;
+        .block-item.custom-style {
+            background-color: #e0f7fa;
+            padding: 10px;
+            border: 2px dashed #00796b;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>Товари</h2>
+    <h2>Оригінальна Сторінка для вибору елементів</h2>
+
+    <!-- Preview of selected elements -->
+    <div class="preview-container" id="preview">
+        <h3>Обрані елементи:</h3>
     </div>
-    <div class="container">
-        <div class="button-container">
-            <form method="post" action="{% url 'export_to_csv' %}">
-                {% csrf_token %}
-                <button type="submit">Конвертувати в CSV</button>
-            </form>
-            <form method="post" action="{% url 'export_to_json' %}">
-                {% csrf_token %}
-                <button type="submit">Експортувати в JSON</button>
-            </form>
-            <form method="post" action="{% url 'export_to_excel' %}">
-                {% csrf_token %}
-                <button type="submit">Експортувати в Excel</button>
-            </form>
-            <a href="{% url 'analyze_data' %}">
-                <button type="button">Перейти до аналізу</button>
-            </a>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Назва товару</th>
-                    <th>Ціна (грн)</th>
-                    <th>Оцінка</th>
-                    <th>Зображення</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for title, price, image, rating in products %}
-                <tr>
-                    <td>{{ title }}</td>
-                    <td>{{ price }}</td>
-                    <td>{{ rating }}</td>
-                    <td><img src="{{ image }}" alt="{{ title }}" width="150"></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <form method="post" action="{% url 'parse_selected_blocks' %}">
+        {% csrf_token %}
+        <div id="selected-blocks-container"></div>
+        <button type="button" onclick="selectAllIdenticalBlocks()">Обрати всі аналогічні</button>
+        <button type="submit">Парсити обрані елементи</button>
+    </form>
+
+    <!-- Iframe to show the full HTML content -->
+    <iframe id="page-iframe" style="width:100%; height:1000px; border:none;"></iframe>
+
+    <script>
+        // Load the HTML content into the iframe and remove SVG elements
+        let htmlContent = `{{ html_content|escapejs }}`;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        const svgs = tempDiv.querySelectorAll('svg');
+        svgs.forEach(svg => svg.remove());
+        document.getElementById('page-iframe').srcdoc = tempDiv.innerHTML;
+
+        // Function to add a block to preview and hidden form
+        function addToSelectedBlocks(htmlContent) {
+            const previewContainer = document.getElementById('preview');
+            const selectedBlocksContainer = document.getElementById('selected-blocks-container');
+
+            // Перевіряємо, чи вже існує цей блок у обраних
+            if (!Array.from(selectedBlocksContainer.children).some(input => input.value === htmlContent)) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'block-item custom-style';  // додатковий CSS-клас
+                previewItem.innerHTML = htmlContent;
+
+                // Resize images if they are larger than 50px by height or width
+                const images = previewItem.querySelectorAll('img');
+                images.forEach(image => {
+                    if (image.width > 50) {
+                        image.width = 50;
+                    }
+                    if (image.height > 50) {
+                        image.height = 50;
+                    }
+                });
+
+                previewContainer.appendChild(previewItem);
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selected_blocks';
+                hiddenInput.value = htmlContent;
+                selectedBlocksContainer.appendChild(hiddenInput);
+            }
+        }
+
+        // Set up click listener on iframe content
+        document.getElementById('page-iframe').addEventListener('load', function() {
+            const iframeDocument = this.contentDocument || this.contentWindow.document;
+
+            iframeDocument.addEventListener('click', function(event) {
+                event.preventDefault();  // Prevent default link behavior
+                event.stopPropagation(); // Stop event from propagating
+
+                const clickedElement = event.target;
+                addToSelectedBlocks(clickedElement.outerHTML);
+            });
+        });
+
+        // Function to select all identical blocks
+        function selectAllIdenticalBlocks() {
+            const iframeDocument = document.getElementById('page-iframe').contentDocument || document.getElementById('page-iframe').contentWindow.document;
+
+            // Отримуємо список всіх обраних блоків
+            const selectedBlocks = document.querySelectorAll('#selected-blocks-container input');
+            selectedBlocks.forEach(input => {
+                const htmlContent = input.value;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlContent;
+                const tagName = tempDiv.firstChild.tagName;
+                const className = tempDiv.firstChild.className;
+
+                // Знаходимо всі елементи в iframe, що відповідають обраному тегу та класу
+                const identicalElements = iframeDocument.querySelectorAll(`${tagName}.${className.split(' ').join('.')}`);
+                identicalElements.forEach(element => {
+                    addToSelectedBlocks(element.outerHTML);
+                });
+            });
+        }
+    </script>
 </body>
 </html>

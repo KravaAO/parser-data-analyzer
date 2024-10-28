@@ -25,6 +25,6 @@ urlpatterns = [
     path('export_to_csv/', views.export_to_csv, name='export_to_csv'),
     path('export_to_json/', views.export_to_json, name='export_to_json'),
     path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
-    path('other_functionality/', views.other_functionality, name='other_functionality'),
     path('analyze_data/', analyzer_views.analyze_data, name='analyze_data'),
+    path('parse_selected_blocks/', views.parse_selected_blocks_view, name='parse_selected_blocks'),  # Додайте цей рядок
 ]
